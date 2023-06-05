@@ -22,7 +22,7 @@ body {
     """, unsafe_allow_html=True)
 
 #título
-st.title("Como serão os números de desmatamento agora na gestão do Lula em 2023? E como seria se o Bolsonaro tivesse sido eleito")
+st.title("Como serão os números de desmatamento agora na gestão do Lula em 2023? E como seria se o Bolsonaro tivesse sido eleito?")
 
 #exibir imagem tema do lula
 st.image("desmatamento.png")
