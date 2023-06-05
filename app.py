@@ -6,6 +6,7 @@ import pycaret
 from pycaret.regression import *
 from sklearn.pipeline import Pipeline
 import numpy as np
+import gdown
 
 #configuração da página
 st.set_page_config(page_title="Desmatamento", page_icon="🌳", layout="centered", initial_sidebar_state="collapsed")
@@ -250,8 +251,15 @@ if st.button("Projetar"):
     df_projecao['governo_Temer'] = 0
     df_projecao['governo_Bolsonaro'] = 0
     df_projecao_dummies = pd.get_dummies(df_projecao, columns=['state', 'municipality'])
+    
+    
+    
 
-    mdl_et = load_model('./pycaret_mdl_rf')
+    url = 'https://drive.google.com/uc?export=download&id=1pqnJpGAkOlPucPYSMvT2rcdQPM1PId8-'
+    output = 'pycaret_mdl_rf.pkl'
+    gdown.download(url, output, quiet=False)
+    mdl_et = load_model('pycaret_mdl_rf')
+#     mdl_et = load_model('./pycaret_mdl_rf')
     et_model = mdl_et.named_steps['trained_model']
 
     ypred = predict_model(mdl_et, data = df_projecao_dummies)
