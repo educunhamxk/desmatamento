@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pycaret
 from pycaret.regression import *
+
 from sklearn.pipeline import Pipeline
 import numpy as np
-import gdown
+# import gdown
 
 #configuração da página
 st.set_page_config(page_title="Desmatamento", page_icon="🌳", layout="centered", initial_sidebar_state="collapsed")
@@ -22,13 +23,13 @@ body {
     """, unsafe_allow_html=True)
 
 #título
-st.title("Como serão os números de desmatamento agora na gestão do Lula em 2023? E como seria se o Bolsonaro tivesse sido eleito?")
+st.title("Como serão os números de desmatamento agora na gestão do Lula em 2023?")
 
 #exibir imagem tema do lula
 st.image("desmatamento.png")
 
 #texto
-st.markdown("Há muita expectativa com a gestão do Lula no que se diz respeito ao desmatamento, já que este foi um dos principais alvos da campanha de Lula contra Bolsonaro nos debates eleitorais. O objetivo do projeto é entender os números gerais do desmatamento da Amazônia Legal ao longo dos últimos anos, entender qual foi impacto do governo Bolsonaro nestes números e prever tanto como será o desmatamento para 2023 na gestão de Lula, como prever caso o Bolsonaro tivesse sido eleito.")
+st.markdown("Há muita expectativa com a gestão do Lula no que se diz respeito ao desmatamento, já que este foi um dos principais alvos da campanha de Lula contra Bolsonaro nos debates eleitorais. O objetivo do projeto é entender os números gerais do desmatamento da Amazônia Legal ao longo dos últimos anos, entender qual foi impacto do governo Bolsonaro nestes números e prever como será o desmatamento para 2023 na gestão de Lula.")
 
 #1º Bloco************************************************************************************************************************
 st.subheader("Análises Preliminares")
@@ -238,7 +239,7 @@ st.markdown("""Acima podemos observar a representativade que o governo de Bolson
 # #texto
 st.subheader("Modelo preditivo")
 
-st.markdown("Por fim, vamos projetar como será o ano de 2023 com o Lula e como seria caso Bolsonaro fosse eleito.")
+st.markdown("Por fim, vamos projetar como será o ano de 2023 com o Lula.")
 
 
 if st.button("Projetar"):
@@ -248,6 +249,8 @@ if st.button("Projetar"):
     df_projecao['year'] = 2023
     df_projecao['governo_Lula'] = 1
     df_projecao['governo_Dilma'] = 0
+    #df_projecao['governo_Dilma1'] = 0
+    #df_projecao['governo_Dilma2'] = 0
     df_projecao['governo_Temer'] = 0
     df_projecao['governo_Bolsonaro'] = 0
     df_projecao_dummies = pd.get_dummies(df_projecao, columns=['state', 'municipality'])
@@ -260,9 +263,11 @@ if st.button("Projetar"):
     #gdown.download(url, output, quiet=False)
     #mdl_et = load_model('pycaret_mdl_rf')
     mdl_xgboost = load_model('./pycaret_mdl_xgboost')
-    xgboost_model = mdl_xgboost.named_steps['trained_model']
+   
+    #xgboost_model = mdl_xgboost.named_steps['trained_model']
 
-    ypred = predict_model(xgboost_model, data = df_projecao_dummies)
+    #ypred = predict_model(xgboost_model, data = df_projecao_dummies)
+    ypred = predict_model(mdl_xgboost, data = df_projecao_dummies)
     df_projecao_dummies['delta_areakm'] = ypred['prediction_label']
 
 
@@ -308,77 +313,8 @@ if st.button("Projetar"):
     plt.tight_layout()
     st.pyplot(fig8)
 
-    st.markdown("A projeção indica que este primeiro ano de governo Lula irá trazer os números de incremento de desmatamento para patamares um pouco menores do que o primeiro ano do governo Bolsonaro. Agora vamos avaliar como seria a projeção caso o Bolsonaro tivesse sido eleito para este ano.")
+    st.markdown("A projeção indica que este primeiro ano de governo Lula irá trazer os números de incremento de desmatamento para patamares um pouco menores do que o primeiro ano do governo Bolsonaro, apesar da nossa expectativa de queda ser maior em relaçao que o modelo projetou, o governo Lula teve um dos maiores picos de desmatamento dos últimos anos em 2008 e isso também foi levado em consideração pelo modelo para projetar como será este ano.")
 
-
-
-    #Projeão Bolsonaro
-
-    # #texto
-    #st.subheader("Modelo preditivo")
-
-    df_projecao_aux = df.copy()
-    df_projecao = df_projecao_aux[['municipality','geocode_ibge','state','governo']].drop_duplicates()
-    df_projecao = df_projecao.drop(columns=['governo'])
-
-    df_projecao['year'] = 2023
-    df_projecao['governo_Lula'] = 0
-    df_projecao['governo_Dilma'] = 0
-    df_projecao['governo_Temer'] = 0
-    df_projecao['governo_Bolsonaro'] = 1
-
-    df_projecao_dummies = pd.get_dummies(df_projecao, columns=['state', 'municipality'])
-
-    # mdl_et = load_model('./pycaret_mdl_rf')
-    # et_model = mdl_et.named_steps['trained_model']
-
-    ypred = predict_model(xgboost_model, data = df_projecao_dummies)
-    df_projecao_dummies['delta_areakm'] = ypred['prediction_label']
-
-
-    # Agrupa os dados por ano e soma os valores de 'areakm'
-    df_projecao_dummies = df_projecao_dummies.drop_duplicates()
-    df_projecao_agrupado = df_projecao_dummies.groupby('year')['delta_areakm'].sum().reset_index()
-    df_agrupado = df.groupby('year')['delta_areakm'].sum().reset_index()
-
-    # Concatena os dois DataFrames
-    comparativo_ano = pd.concat([df_agrupado, df_projecao_agrupado], ignore_index=True)
-    comparativo_ano = comparativo_ano[comparativo_ano['year'] != 2007]
-    # Cria o gráfico de barras
-    fig8, ax8 = plt.subplots(figsize=(10,6))
-
-    # Define a largura das barras
-    bar_width = 0.2
-
-    # Define uma cor padrão e uma cor destacada
-    default_color = 'blue'
-    highlight_color = 'red'
-
-    # Cria o gráfico para cada ano
-    for i, ano in enumerate(comparativo_ano['year'].unique()):
-        df_ano = comparativo_ano[comparativo_ano['year'] == ano]
-        # Adiciona um valor constante ao argumento `x` do método `bar` para ajustar a posição das barras
-        bars = ax8.bar(i + bar_width, df_ano['delta_areakm'], width=bar_width, 
-                       color=highlight_color if ano == 2023 else default_color)
-
-        # Adiciona rótulos nas barras
-        for bar in bars:
-            yval = bar.get_height()
-            ax8.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom')
-
-    # Legendas e títulos
-    ax8.set_xlabel('Ano')
-    ax8.set_ylabel('Área desmatada (km²)')
-    ax8.set_title('Desmatamento por ano')
-
-    # Ajusta os ticks do eixo X para corresponderem ao meio das barras e define os rótulos dos ticks como os anos
-    ax8.set_xticks(np.arange(len(comparativo_ano['year'].unique())) + bar_width)
-    ax8.set_xticklabels(comparativo_ano['year'].unique())
-
-    plt.tight_layout()
-    st.pyplot(fig8)
-
-    st.markdown("A principío esta projeção gera estranhamento já que o esperado seria um contínuo aumento do que vinhamos tendo nos governos anteriores de Bolsonaro, considerando a pouca importância que a pauta de desmatamento teve ao longo do governo e os aumentos sucessivos de incrementos a cada ano. Contudo, o modelo não considera apenas a variável de quem é o presidente mas também o comportamento histórico dos incrementos. E se notarmos ao longo dos anos não tivemos nenhum período com 4 anos de aumento consecutivo, portanto, o valor apresentado pode indicar apenas um leve recuo para a projeção se moldar de um modo que faça mais sentido a curva histórica. ")
 
 
 
