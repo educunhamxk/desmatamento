@@ -313,7 +313,7 @@ if st.button("Projetar"):
     plt.tight_layout()
     st.pyplot(fig8)
 
-    st.markdown("A projeção indica que este primeiro ano de governo Lula irá trazer os números de incremento de desmatamento para patamares um pouco menores do que o primeiro ano do governo Bolsonaro, apesar da nossa expectativa de queda ser maior em relaçao que o modelo projetou, o governo Lula teve um dos maiores picos de desmatamento dos últimos anos em 2008 e isso também foi levado em consideração pelo modelo para projetar como será este ano.")
+    st.markdown("A projeção indica que este primeiro ano de governo Lula irá trazer os números de incremento de desmatamento para patamares um pouco menores do que os dois últimos anos do governo Bolsonaro. Apesar da nossa expectativa de queda ser maior em relaçao ao que o modelo projetou, o governo Lula teve um dos maiores picos de desmatamento dos últimos anos em 2008 e isso também foi levado em consideração pelo modelo para projetar como será este ano.")
 
 
 
