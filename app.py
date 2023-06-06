@@ -262,7 +262,7 @@ if st.button("Projetar"):
     mdl_xgboost = load_model('./pycaret_mdl_xgboost')
     xgboost_model = mdl_xgboost.named_steps['trained_model']
 
-    ypred = predict_model( xgboost_model, data = df_projecao_dummies)
+    ypred = predict_model(xgboost_model, data = df_projecao_dummies)
     df_projecao_dummies['delta_areakm'] = ypred['prediction_label']
 
 
